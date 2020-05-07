@@ -102,16 +102,22 @@ class PRAUXYNotifications {
             _this.mongo.find("notifications", {id: req.params.id}).then(r => {
                 if(r.length != 0) {
                     r = r[0];
-                    this.webpush.setVapidDetails("mailto:"+r.email, r.vapidKeys.publicKey, r.vapidKeys.privateKey);
+                    _this.mongo.find("notifications", {"subscribers.subscription.endpoint": {$in: [sub.endpoint]}}).then(subExists => {
+                        if(subExists.length == 0) {
+                            this.webpush.setVapidDetails("mailto:"+r.email, r.vapidKeys.publicKey, r.vapidKeys.privateKey);
 
-                    this.webpush.sendNotification(sub, payload).then(r => {
-                        _this.addSubscriber(req.params.id, req.body.userid, {isMobile: true}, sub).then(r => {
-                            res.status(200).json({status: "complete", resp: r})
-                        }).catch(e => res.status(500).json({status: "fail", reason: "mongodb", extra: e}));
-                    }).catch(err => {
-                        console.log(err);
-                        res.status(500).json({reason: "invalid sub"})
-                    });
+                            this.webpush.sendNotification(sub, payload).then(r => {
+                                _this.addSubscriber(req.params.id, req.body.userid, {isMobile: true}, sub).then(r => {
+                                    res.status(200).json({status: "complete", resp: r})
+                                }).catch(e => res.status(500).json({status: "fail", reason: "mongodb", extra: e}));
+                            }).catch(err => {
+                                console.log(err);
+                                res.status(500).json({reason: "invalid sub"})
+                            });
+                        } else {
+                            res.status(409).json({reason: "already signed up", deviceid: subExists[0].deviceid});
+                        }
+                    })
                 } else {
                     res.status(404).json({fail: "unknown id"})
                 }
@@ -140,9 +146,11 @@ class PRAUXYNotifications {
     addSubscriber(appID, userID, deviceInfo, subscriptionInfo) {
         const _this = this;
 
+        const uid = this.generateRandomID();
+
         return new Promise((resolve, reject) => {
-            _this.mongo.addToList("notifications", {id: appID}, {subscribers: { userID: userID, deviceInfo: deviceInfo, subscription: subscriptionInfo } }).then(r => {
-                resolve(r);
+            _this.mongo.addToList("notifications", {id: appID}, {subscribers: { userID: userID, deviceInfo: deviceInfo, subscription: subscriptionInfo, deviceid: uid } }).then(r => {
+                resolve({deviceid: uid});
             }).catch(r => reject(r));
         })
     }
