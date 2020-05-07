@@ -1,0 +1,26 @@
+{
+  "name": "prauxy-notifications",
+  "version": "1.0.0",
+  "description": "This is the first PRAUXY microservice. It is a full notification backend.",
+  "main": "index.js",
+  "dependencies": {
+    "web-push": "^3.4.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongo": "^0.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvizdos/PRAUXY-Notifications.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kvizdos/PRAUXY-Notifications/issues"
+  },
+  "homepage": "https://github.com/kvizdos/PRAUXY-Notifications#readme"
+}
