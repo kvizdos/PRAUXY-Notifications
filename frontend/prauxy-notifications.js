@@ -25,7 +25,7 @@ class PRAUXYNotification {
           async function run() {
             console.log('Registering service worker');
             const registration = await navigator.serviceWorker.
-              register('/prauxynotificationsw.js', {scope: '/'});
+              register('/prauxy-notifications-sw.js', {scope: '/'});
             console.log('Registered service worker');
           
             console.log('Registering push');

@@ -1,3 +1,5 @@
+// Download this file into the root of your project.
+
 console.log('Loaded PRAUXY Notification service worker.');
 
 self.addEventListener('push', ev => {

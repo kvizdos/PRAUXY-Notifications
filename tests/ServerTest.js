@@ -1,0 +1,1 @@
+const _NS = require('../index').createServer();

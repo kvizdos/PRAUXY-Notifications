@@ -1,13 +1,15 @@
 {
   "name": "prauxy-notifications",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "This is the first PRAUXY microservice. It is a full notification backend.",
   "main": "index.js",
   "dependencies": {
-    "web-push": "^3.4.3",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "mongo": "^0.1.0"
+    "mongo": "^0.1.0",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "web-push": "^3.4.3"
   },
   "devDependencies": {},
   "scripts": {
