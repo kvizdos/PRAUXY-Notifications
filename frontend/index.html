@@ -6,11 +6,11 @@
     <title>Document</title>
     <script src="/napi/prauxy-notifications.js"></script>
     <script>
-        const _notifier = new PRAUXYNotification("wru50ig4l4gsah4s5mxa94-b", "BAJvsFA5TYr9Z19I6QgOi65_dMEJOSabsluK3HZR2IwzG6krOJkq5SiA_MlM6gKJgUXqRRLd37rbjTcx833x3tY");
+        const _notifier = new PRAUXYNotification("0pu8akew9budhph43q3a89-6", "BFYKD0yzyWQAy7I24iQK7s4-_uSjz3OgKg8DAcH-LcF7oK_KXjczzqDjNh9rHruWMMVuauY4O60P9kwktF6C7R0");
     </script>
 </head>
 <body>
     <h1>this is a test</h1>
-    <button>subscribe to notifications.</button>
+    <button onclick="_notifier.subscribe((d) => console.log('good', d), (e) => console.log('died', e))">subscribe to notifications.</button>
 </body>
 </html>
