@@ -88,6 +88,34 @@ class PRAUXYNotificationServer {
         return id;
     }
 
+    querySubscribers(appID, query = {}) {
+        const _this = this;
+
+        return new Promise((resolve, reject) => {
+            if(appID == undefined) {
+                return reject({status: "fail", message: "invalid app id"});
+            }
+
+            _this.mongo.find("notifications", {id: appID}).then(r => {
+                r = r[0];
+
+                let results = Object.keys(query).length == 0 ? r.subscribers : r.subscribers.filter(subscriber => {
+                    let doPass = true;
+                    
+                    // Check UserID
+                    doPass = doPass && query.userID != undefined ? subscriber.userID == query.userID : doPass;
+                    //       If querying mobile devices    If subscriber value == query value                 else: return whatever
+                    doPass = doPass && query.isMobile != undefined  ? subscriber.deviceInfo.isMobile  == query.isMobile : doPass;
+                    doPass = doPass && query.isDesktop != undefined ? subscriber.deviceInfo.isDesktop == query.isDesktop : doPass;
+
+                    return doPass;
+                });
+
+                resolve(results);
+            });  
+        })
+    }
+
     registerSocketEndpoints() {
         const _this = this;
 
@@ -140,6 +168,10 @@ class PRAUXYNotificationServer {
                 });
             })
 
+
+            socket.on('get-subscribers', (query, cb) => {
+                this.querySubscribers(socket.appID, query).then(d => cb(d)).catch(e => cb(e));
+            })
         })
     }
 

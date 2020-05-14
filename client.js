@@ -26,6 +26,12 @@ class PRAUXYNotificationClient {
         }, cb);
     }
 
+    get(query = {}) {
+        return new Promise(resolve => {
+            this.socket.emit('get-subscribers', query, (subs) => resolve(subs));
+        })
+    }
+
     
 }
 
