@@ -3,8 +3,8 @@ const _Client = require("./client");
 
 const createServer = (port = 8084) => new _Server.createServer(port);
 
-const connect = (appID, url = "http://localhost:8084") => {
-    const client = new _Client.client(url, appID);
+const connect = (appID, secret, url = "http://localhost:8084", cb) => {
+    const client = new _Client.client(url, appID, secret, cb);
 
     return client;
 }

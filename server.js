@@ -1,21 +1,6 @@
 const path = require('path');
 const pkg = require(path.join(__dirname, 'package.json'))
 
-// TY https://dev.to/aligoren/then-after-foreach-984
-Object.defineProperty(Array.prototype, "asyncForEach", {
-    enumerable: false,
-    value: function(task){
-        return new Promise((resolve, reject) => {
-            this.forEach(function(item, index, array){
-                task(item, index, array);
-                if(Object.is(array.length - 1, index)){
-                    resolve({ status: 'finished', count: array.length })
-                }
-            });        
-        })
-    }
-});
-
 class PRAUXYNotificationServer {
     constructor(port = 8084) {
         this.port = port;
@@ -107,26 +92,37 @@ class PRAUXYNotificationServer {
         const _this = this;
 
         this.io.on('connection', (socket) => {
-            socket.on('connect to', (appID, cb) => {
+            socket.on('connect to', (appID, secret, cb) => {
                 _this.mongo.find("notifications", {id: appID}).then(r => {
                     if(r.length > 0) {
                         r = r[0];
+                        if(r.secret !== secret) {
+                            cb({status: "failed", message: "invalid secret"});
+                            return;
+                        }
 
                         socket.appID = appID;
                         socket.vapidDetails = ["mailto:"+r.email, r.vapidKeys.publicKey, r.vapidKeys.privateKey]
 
                         cb({status: "complete"});
                     } else {
-                        cb({status: "fail", reason: "invalid app id"});
+                        cb({status: "fail", message: "invalid app id"});
                     }
                 });
             })
-            socket.on('send-notification', (details) => {
+            socket.on('send-notification', (details, cb = () => {}) => {
+                if(socket.vapidDetails == undefined) {
+                    cb({status: "failed", message: "connection hasn't started yet"})
+                    return;
+                }
+
                 const payload = JSON.stringify({title: details.title, body: details.body});
 
                 _this.webpush.setVapidDetails(...socket.vapidDetails);
 
                 _this.mongo.find("notifications", {id: socket.appID}).then(r => {
+                    let totalSent = 0;
+                    let totalFailed = 0;
                     if(r.length > 0) {
                         r = r[0];
 
@@ -191,6 +187,7 @@ class PRAUXYNotificationServer {
         return new Promise((resolve, reject) => {
             const newApp = {
                 id: _this.generateRandomID(),
+                secret: _this.generateRandomID(25),
                 name: name,
                 url: url,
                 subscribers: [],
