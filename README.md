@@ -1,4 +1,4 @@
-# PRAUXY Notifications Readme
+# PRAUXY Notifications
 This service simplifies message delivery and security. Using PRAUXY, you can expect high grade and durable message delivery that includes open tracking and other detailed analytics. 
 
 ## Features
